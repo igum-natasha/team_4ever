@@ -47,6 +47,27 @@ def error(update: Update, context: CallbackContext):
     logger.warning(f'Update {update} caused error {context.error}')
 
 
+def history(update: Updater, context: CallbackContext):
+    handle=open("history.txt","w")
+    history=[]
+    update.message.reply_text("There are not actions")
+    if len(array)==0:
+        handle.write("There are not actions")
+        update.message.reply_text("There are not actions")
+    elif len(array)>=5:
+        handle.write("Last five actions are:")
+        update.message.reply_text("Last five actions are:")
+        for i in range(len(array)-5,len(array)):
+            handle.write(f'Action {i+1}')
+            history.append(f'Action {i+1}')
+            for key in array[i]:
+                handle.write(key+"-"+array[i][key])
+                history.append(key + '-' + array[i][key])
+    update.message.reply_text("\n".join(history))
+    handle.close()       
+        
+
+
 def main():
     bot = Bot(
         token=TOKEN,
