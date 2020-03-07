@@ -30,7 +30,7 @@ def decorator_error(func):
         def inner(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except Exeption as er:
+            except error:
                 update.message.reply_text(f'Error! Function:{func.__name__}')
             return inner
         
