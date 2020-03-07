@@ -26,27 +26,40 @@ def analise(func):
         return func(*args, **kwargs)
     return inner
 
+def decorator_error(func):
+        def inner(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)
+            except Exeption as er:
+                update.message.reply_text(f'Error! Function:{func.__name__}')
+            return inner
+        
 @analise
+@decorator_error
 def start(update: Update, context: CallbackContext):
     """Send a message when the command /start is issued."""
     update.message.reply_text(f'Привет, {update.effective_user.first_name}!')
 
 @analise
+@decorator_error
 def chat_help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Введи команду /start для начала. ')
 
 @analise
+@decorator_error
 def echo(update: Update, context: CallbackContext):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
 
-
+@analise
+@decorator_error
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
     logger.warning(f'Update {update} caused error {context.error}')
 
-
+@analise
+@decorator_error
 def history(update: Updater, context: CallbackContext):
     handle=open("history.txt","w")
     history=[]
@@ -67,7 +80,7 @@ def history(update: Updater, context: CallbackContext):
     handle.close()       
         
 
-
+    
 def main():
     bot = Bot(
         token=TOKEN,
