@@ -1,0 +1,21 @@
+Last five actions are:
+Action 2:
+user:Наташа
+function:chat_help
+message:/help
+Action 3:
+user:Наташа
+function:echo
+message:hi
+Action 4:
+user:Наташа
+function:echo
+message:woo
+Action 5:
+user:Наташа
+function:echo
+message:good night
+Action 6:
+user:Наташа
+function:history
+message:/history

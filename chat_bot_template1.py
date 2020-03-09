@@ -15,67 +15,69 @@ logger = logging.getLogger(__name__)
 array=[]
 # Define a few command handlers. These usually take the two arguments update and
 # context. Error handlers also receive the raised TelegramError object in error.
-def analise(func):
+def analise(function):
     def inner(*args, **kwargs):
-        update=argv[0]
+        update = args[0]
         if update and hasattr(update, 'message') and hasattr(update,'effective_user'):
             array.append({
-                "user":update.effective_user.first_name,
-                "function":func.__name__,
-                "message":update.message.text})
-        return func(*args, **kwargs)
+                "user": update.effective_user.first_name,
+                "function": function.__name__,
+                "message": update.message.text})
+        return function(*args, **kwargs)
     return inner
 
 def decorator_error(func):
-        def inner(*args, **kwargs):
-            try:
-                return func(*args, **kwargs)
-            except error:
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except SyntaxError:
+            update = args[0]
+            if update:
                 update.message.reply_text(f'Error! Function:{func.__name__}')
-            return inner
+    return inner
+
+
+
         
-@analise
 @decorator_error
+@analise
 def start(update: Update, context: CallbackContext):
     """Send a message when the command /start is issued."""
     update.message.reply_text(f'Привет, {update.effective_user.first_name}!')
 
-@analise
 @decorator_error
+@analise
 def chat_help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Введи команду /start для начала. ')
 
+
 @analise
-@decorator_error
 def echo(update: Update, context: CallbackContext):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
 
 @analise
-@decorator_error
 def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
     logger.warning(f'Update {update} caused error {context.error}')
 
-@analise
 @decorator_error
 def history(update: Updater, context: CallbackContext):
-    handle=open("history.txt","w")
-    history=[]
-    update.message.reply_text("There are not actions")
-    if len(array)==0:
-        handle.write("There are not actions")
+    handle = open("history.txt", "w")
+    history =[]
+    if len(array) == 0:
+        handle.write("There are not actions\n")
         update.message.reply_text("There are not actions")
-    elif len(array)>=5:
-        handle.write("Last five actions are:")
+    elif len(array) >0:
+        handle.write("Last five actions are:\n")
         update.message.reply_text("Last five actions are:")
-        for i in range(len(array)-5,len(array)):
-            handle.write(f'Action {i+1}')
-            history.append(f'Action {i+1}')
+        for i in range(len(array)-5, len(array)):
+            handle.write(f'Action {i+1}:\n')
+            history.append(f'Action {i+1}:')
             for key in array[i]:
-                handle.write(key+"-"+array[i][key])
-                history.append(key + '-' + array[i][key])
+                handle.write(key+" : "+array[i][key]+"\n")
+                history.append(key + ' : ' + array[i][key])
     update.message.reply_text("\n".join(history))
     handle.close()       
         
@@ -91,6 +93,7 @@ def main():
     # on different commands - answer in Telegram
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('help', chat_help))
+    updater.dispatcher.add_handler(CommandHandler('history', history))
 
     # on noncommand i.e message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, echo))
