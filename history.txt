@@ -1,21 +1,13 @@
-Last five actions are:
+Last actions are:
+Action 1:
+user : Наташа
+function : chat_help
+message : /help
 Action 2:
-user:Наташа
-function:chat_help
-message:/help
+user : Наташа
+function : start
+message : /start
 Action 3:
-user:Наташа
-function:echo
-message:hi
-Action 4:
-user:Наташа
-function:echo
-message:woo
-Action 5:
-user:Наташа
-function:echo
-message:good night
-Action 6:
-user:Наташа
-function:history
-message:/history
+user : Наташа
+function : echo
+message : gof
