@@ -65,22 +65,21 @@ def error(update: Update, context: CallbackContext):
 @decorator_error
 @analise
 def history(update: Updater, context: CallbackContext):
-    handle = open("history.txt", "w")
-    history =[]
-    if len(array) == 0:
-        handle.write("There are not actions\n")
-        update.message.reply_text("There are not actions")
-    elif len(array) >0:
-        handle.write("Last actions are:\n")
-        update.message.reply_text("Last actions are:")
-        for i in range(0, len(array)):
-            handle.write(f'Action {i+1}:\n')
-            history.append(f'Action {i+1}:')
-            for key in array[i]:
-                handle.write(key+" : "+array[i][key]+"\n")
-                history.append(key + ' : ' + array[i][key])
-    update.message.reply_text("\n".join(history))
-    handle.close()       
+    with open("history.txt", "w") as handle:
+        history =[]
+        if len(array) == 0:
+            handle.write("There are not actions\n")
+            update.message.reply_text("There are not actions")
+        elif len(array) >0:
+            handle.write("Last actions are:\n")
+            update.message.reply_text("Last actions are:")
+            for i in range(0, len(array)):
+                handle.write(f'Action {i+1}:\n')
+                history.append(f'Action {i+1}:')
+                for key in array[i]:
+                    handle.write(key+" : "+array[i][key]+"\n")
+                    history.append(key + ' : ' + array[i][key])
+        update.message.reply_text("\n".join(history))
 
 @decorator_error
 @analise
@@ -89,13 +88,11 @@ def facts(update: Updater, context: CallbackContext):
     r.encoding = "utf-8"
     s = r.json()
     ma = 0
-    f=[]
-    for i in range(len(s['all'])):
-        if s['all'][i]['upvotes'] > ma:
-            ma = s['all'][i]['upvotes']
-            f=[]
-            f.append("User: "+s['all'][i]['user']['name']['first']+' '+s['all'][i]['user']['name']['last']+"\n"+s['all'][i]['text']+"\nLikes: "+str(s['all'][i]['upvotes']))
-    update.message.reply_text("\n".join(f))
+    all=s['all']
+    for i in range(len(all)):
+        if all[i]['upvotes'] > ma:
+            ma = all[i]['upvotes']
+            update.message.reply_text(f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}')
     
 def main():
     bot = Bot(

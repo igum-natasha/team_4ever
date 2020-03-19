@@ -1,13 +1,5 @@
 Last actions are:
 Action 1:
 user : Наташа
-function : chat_help
-message : /help
-Action 2:
-user : Наташа
-function : start
-message : /start
-Action 3:
-user : Наташа
-function : echo
-message : gof
+function : history
+message : /history
