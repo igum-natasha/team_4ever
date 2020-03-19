@@ -1,5 +1,0 @@
-Last actions are:
-Action 1:
-user : Наташа
-function : history
-message : /history
