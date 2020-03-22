@@ -120,7 +120,7 @@ def corona(update: Updater, context: CallbackContext):
                 count += 1
             if count == 5:
                 break
-    answer='\n'.join(prov)
+    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'+'\n'.join(prov)
     update.message.reply_text(answer)
 
 

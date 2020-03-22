@@ -1,4 +1,5 @@
 !!!team_4ever!!!
+
 Set up Python environment
 
 Create virtual environment python -m venv venv
@@ -14,10 +15,12 @@ Execute python chat_bot_template.py
 Commands
 
      -/start Привет, user!
-
+	 
      -/help Введите команду /start для начала
 
      -/history Вывод последних команд
 
      -/facts Вывод самого популярного факта о котах из https://cat-fact.herokuapp.com
+	 
+	 -/corona_stats Вывод пяти провинций с наибольшим количеством зараженных COVID-19
 
