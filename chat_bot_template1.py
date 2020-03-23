@@ -123,6 +123,11 @@ def corona(update: Updater, context: CallbackContext):
     answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'+'\n'.join(prov)
     update.message.reply_text(answer)
 
+def info(update: Updater, context: CallbackContext):
+    answer='Команды для работы с ботом:\n/start-Приветствие\n/help-Подсказка с чего начать\n' \
+           '/history-стория последних запросов\n/facts-Самый популярный факт о котах\n' \
+           '/corona_stats-Пять провинций с наибольшим кол-вом зараженных'
+    update.message.reply_text(answer)
 
 def main():
     bot = Bot(
@@ -137,6 +142,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('history', history))
     updater.dispatcher.add_handler(CommandHandler('facts', facts))
     updater.dispatcher.add_handler(CommandHandler('corona_stats', corona))
+    updater.dispatcher.add_handler(CommandHandler('info', info))
     # on noncommand i.e message - echo the message on Telegram
     updater.dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
