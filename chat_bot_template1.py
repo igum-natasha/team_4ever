@@ -109,18 +109,27 @@ def corona(update: Updater, context: CallbackContext):
             day += 1
         else:
             break
-    open('google.csv', 'wb').write(r.content)
+    corona=open('google.csv', 'wb')
+    corona.write(r.content)
+    corona.close()
     with open('google.csv', 'r') as corona:
-        count = 0
-        prov = []
+        count = []
+        prov = {}
         file = csv.DictReader(corona)
         for row in file:
-            if row['Province/State'] != '':
-                prov.append(f"{row['Province/State']}: {row['Confirmed']}")
-                count += 1
-            if count == 5:
-                break
-    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'+'\n'.join(prov)
+            if int(row['Active']) != 0:
+              if row['Province_State'] != '':
+                 prov[f"{row['Province_State']}"] = int(row['Active'])
+              else:
+                prov[f"{row['Country_Region']}"] = int(row['Active'])
+              count.append(int(row['Active']))
+    count.sort(reverse=True)
+    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+    for elem in count[:5]:
+        for key, value in prov.items():
+            if value == elem:
+                answer += f"{key} : {value}\n"
+
     update.message.reply_text(answer)
 
 def info(update: Updater, context: CallbackContext):
