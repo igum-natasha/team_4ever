@@ -62,9 +62,4 @@ class Website():
         s = r.json()
         return s
 
-s=Website.get_data('https://cat-fact.herokuapp.com/facts')
-ma = 0
-all=s['all']
-print(all)
-
 
