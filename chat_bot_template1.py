@@ -3,11 +3,10 @@
 
 import logging
 import requests
-import csv
-import datetime
 from setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
+from classes import WorkWithCoronaData,Website
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -87,49 +86,23 @@ def history(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def facts(update: Updater, context: CallbackContext):
-    r = requests.get('https://cat-fact.herokuapp.com/facts')
-    r.encoding = "utf-8"
-    s = r.json()
+    s=Website.get_data('https://cat-fact.herokuapp.com/facts')
     ma = 0
     all=s['all']
     for i in range(len(all)):
-        if all[i]['upvotes'] > ma:
+        if all[i]['upvotes'] > ma and all[i]['type']=='cat':
             ma = all[i]['upvotes']
             update.message.reply_text(f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}')
 
 def corona(update: Updater, context: CallbackContext):
-    data = str(datetime.datetime.today())
-    data = data[:data.find(" ")]
-    data1 = data.split('-')
-    day = 0
-    while True:
-        url = f'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/{data1[1]}-{int(data1[2]) - day}-{data1[0]}.csv'
-        r = requests.get(url, allow_redirects=True)
-        if r.status_code != 200:
-            day += 1
-        else:
-            break
-    corona=open('google.csv', 'wb')
-    corona.write(r.content)
-    corona.close()
-    with open('google.csv', 'r') as corona:
-        count = []
-        prov = {}
-        file = csv.DictReader(corona)
-        for row in file:
-            if int(row['Active']) != 0:
-              if row['Province_State'] != '':
-                 prov[f"{row['Province_State']}"] = int(row['Active'])
-              else:
-                prov[f"{row['Country_Region']}"] = int(row['Active'])
-              count.append(int(row['Active']))
-    count.sort(reverse=True)
     answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+    count = []
+    prov = {}
+    WorkWithCoronaData.Provinces(prov, count)
     for elem in count[:5]:
         for key, value in prov.items():
             if value == elem:
                 answer += f"{key} : {value}\n"
-
     update.message.reply_text(answer)
 
 def info(update: Updater, context: CallbackContext):
@@ -165,13 +138,6 @@ def main():
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-
-
-
-
-        
-        
-
 
 if __name__ == '__main__':
     logger.info('Start Bot')
