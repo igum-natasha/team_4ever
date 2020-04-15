@@ -2,8 +2,8 @@ import csv
 import requests
 import datetime
 class WorkWithCsvTable():
-    def __init__(self):
-        self.data=[]
+    def __init__(self,data):
+        self.data=data
     def write_table(self,file_name):
         with open(file_name, 'wb') as file:
             writer = csv.DictWriter(file)
@@ -22,15 +22,16 @@ class WorkWithCsvTable():
     def get_data(self):
         return self.data
 
-class WorkWithCoronaData(WorkWithCsvTable):
-    def __init__(self,data):
-        super().__init__(data)
-        self.prov={}
-        self.count=[]
-        self.data1=[]
-        self.table=[]
-        self.now={}
-    def get_table(self,day):
+class WorkWithCoronaData():
+    def __init__(self,prov,count,data1,table,now,day):
+        self.prov=prov
+        self.count=count
+        self.data1=data1
+        self.table=table
+        self.now=now
+        self.day=day
+    def get_table(self):
+
         self.data1 = datetime.date.today()
         self.data1 = self.data1.strftime("%m-%d-%Y").split('-')
         while True:
@@ -38,16 +39,17 @@ class WorkWithCoronaData(WorkWithCsvTable):
             r = requests.get(url, allow_redirects=True)
             if r.status_code != 200:
                 if int(self.data1[1]) < 10:
-                    self.data1[1] = '0' + str(int(self.data1[1]) - 1-day)
+                    self.data1[1] = '0' + str(int(self.data1[1]) - 1-self.day)
                 else:
-                    self.data1[1] = str(int(self.data1[1]) - 1-day)
+                    self.data1[1] = str(int(self.data1[1]) - 1-self.day)
             else:
                 break
         corona = open('google.csv', 'wb')
         corona.write(r.content)
         corona.close()
-        WorkWithCsvTable.read_table('google.csv')
-        self.table=WorkWithCsvTable.get_data
+        data_new=WorkWithCsvTable([])
+        data_new.read_table("google.csv")
+        self.table=data_new.get_data()
         if int(self.data1[1]) < 10:
             self.data1[1] = '0' + str(int(self.data1[1]) - 1)
         else:
@@ -55,7 +57,7 @@ class WorkWithCoronaData(WorkWithCsvTable):
 
 
     def provinces(self):
-        WorkWithCoronaData.get_table(0)
+        self.get_table()
         for row in self.table:
              if int(row['Active']) != 0:
                 if row['Province_State'] != '':
@@ -65,8 +67,8 @@ class WorkWithCoronaData(WorkWithCsvTable):
                 self.count.append(int(row['Active']))
         self.count.sort(reverse=True)
 
-    def corona_dynamics(self,day):
-        WorkWithCoronaData.get_table(day)
+    def corona_dynamics(self):
+        self.get_table()
         k=0
         buf=[]
         for row in self.table:
@@ -90,8 +92,8 @@ class WorkWithCoronaData(WorkWithCsvTable):
                         self.count[key] = value[4]+int(row["Active"])
         self.count.sort(reverse=True)
 
-    def corona_russia(self,day):
-        WorkWithCoronaData.get_table(day)
+    def corona_russia(self):
+        self.get_table()
         k = 0
         buf = []
         for row in self.table:
@@ -106,9 +108,11 @@ class WorkWithCoronaData(WorkWithCsvTable):
 
 
 class Website():
-    @staticmethod
-    def get_data(url):
-        r = requests.get(url)
+    def __init__(self,url):
+        self.url=url
+
+    def get_data(self):
+        r = requests.get(self.url)
         r.encoding = "utf-8"
         s = r.json()
         return s

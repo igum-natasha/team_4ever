@@ -86,7 +86,8 @@ def history(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def facts(update: Updater, context: CallbackContext):
-    s=Website.get_data('https://cat-fact.herokuapp.com/facts')
+    web=Website('https://cat-fact.herokuapp.com/facts')
+    s=Website.get_data(web)
     ma = 0
     all=s['all']
     for i in range(len(all)):
@@ -98,10 +99,8 @@ def facts(update: Updater, context: CallbackContext):
 @analise
 def corona(update: Updater, context: CallbackContext):
     answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
-    corona=WorkWithCoronaData
-    corona.prov={}
-    corona.count=[]
-    corona.provinces()
+    corona=WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    WorkWithCoronaData.provinces(corona)
     for elem in corona.count[:5]:
         for key, value in corona.prov.items():
             if value == elem:
@@ -112,14 +111,13 @@ def corona(update: Updater, context: CallbackContext):
 @analise
 def corona_dynamics(update: Updater, context: CallbackContext):
     answer='Динамика заражений COVID-19 за два дня для Топ-5 стран:\n'
-    corona = WorkWithCoronaData
-    corona1=WorkWithCoronaData
-    corona.count,corona1.count1=[0]*1000,[0]*1000
-    now=WorkWithCoronaData.corona_dynamics(0)
-    now1=WorkWithCoronaData.corona_dynamics(1)
+    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
+    WorkWithCoronaData.corona_dynamics(corona)
+    WorkWithCoronaData.corona_dynamics(corona1)
     for elem in corona.count[:5]:
         for key,value in corona.now.items():
-            for key1,value1 in corona1.now1.items():
+            for key1,value1 in corona1.now.items():
                 if key==key1 and value[4]==elem:
                     answer+=f'{str(value[0]).upper()}\n'
                     answer+=f'Confirmed: {value[1]-value1[1]} Deaths: {value[2]-value1[2]} Recovered: {value[3]-value1[3]} Active: {value[4]-value1[4]}\n'
@@ -129,13 +127,12 @@ def corona_dynamics(update: Updater, context: CallbackContext):
 @analise
 def corona_russia(update: Updater, context: CallbackContext):
     answer='Динамика заражений COVID-19 за два дня для России:\n'
-    corona = WorkWithCoronaData
-    corona1 = WorkWithCoronaData
-    corona.count, corona1.count1 = [0] * 1000, [0] * 1000
-    now = WorkWithCoronaData.corona_dynamics(0)
-    now1 = WorkWithCoronaData.corona_dynamics(1)
+    corona = WorkWithCoronaData({},[0] * 1000,[],[],{},0)
+    corona1 = WorkWithCoronaData({},[0] * 1000,[],[],{},1)
+    WorkWithCoronaData.corona_russia(corona)
+    WorkWithCoronaData.corona_russia(corona1)
     for key,value in corona.now.items():
-            for key1,value1 in corona1.now1.items():
+        for key1,value1 in corona1.now.items():
                     answer+=f'{str(value[0]).upper()}\n'
                     answer+=f'Confirmed: {value[1]-value1[1]} Deaths: {value[2]-value1[2]} Recovered: {value[3]-value1[3]} Active: {value[4]-value1[4]}\n'
     update.message.reply_text(answer)
