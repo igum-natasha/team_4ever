@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-from team_4ever.classes import WorkWithCsvTable,  WorkWithCoronaData, Website
+from classes import WorkWithCsvTable,  WorkWithCoronaData, Website
 
 class TestsWorkWithCsvTable(unittest.TestCase):
     def setUp(self):
@@ -14,14 +14,14 @@ class TestsWorkWithCsvTable(unittest.TestCase):
     def test_write_no_table(self):
         self.table.data=[]
         mock_open_handler = mock.mock_open()
-        with patch('team_4ever.classes.open', mock_open_handler):
+        with patch('classes.open', mock_open_handler):
             self.table.write_table("history.txt")
 
     def test_write_table(self):
         self.table.data=[{'Country_Region': 'test1_coutry', 'Province_State': 'test_state'},
                          {'Country_Region': 'test2_coutry', 'Province_State': 'test_state'}]
         mock_open_handler = mock.mock_open()
-        with patch('team_4ever.classes.open', mock_open_handler):
+        with patch('classes.open', mock_open_handler):
             self.table.write_table("history,txt")
 
 
