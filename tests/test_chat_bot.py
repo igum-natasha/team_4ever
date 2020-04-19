@@ -7,7 +7,7 @@ from unittest.mock import patch
 from chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
 
 @analise
-def simple_action(update, context):
+def simple_action(update):
     return None
 
 new_array= []
@@ -15,39 +15,40 @@ new_array1= []
 class TestsLogs(unittest.TestCase):
     def setUp(self):
         self.update = mock.MagicMock()
-        self.context=mock.MagicMock()
 
     def tearDown(self):
         global array
         array = []
 
     def test_log_action(self):
-        self.update.message.text="hi"
-        self.update.effective_user.first_name="Miki"
-        array.append({'user':'Miki','function':'simple_action','message':'hi'})
-        simple_action(self.update, self.context)
-        self.assertEqual(array,[{'user':'Miki','function':'simple_action','message':'hi'}])
+        self.update.message.text = "hi"
+        self.update.effective_user.first_name = "Miki"
+        simple_action(self.update)
+        self.assertEqual(array, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])
 
     def test_no_message(self):
         self.update = mock.MagicMock(spec=['effective_user'])
-        simple_action(self.update,self.context)
+        simple_action(self.update)
         self.assertEqual(array, [])
 
     def test_no_user(self):
         self.update = mock.MagicMock(spec=['message'])
-        simple_action(self.update,self.context)
+        simple_action(self.update)
         self.assertEqual(array, [])
 
     def test_none_update(self):
         self.update=None
-        simple_action(self.update,self.context)
+        simple_action(self.update)
         self.assertEqual(array, [])
+
+
+
+
 
 class TestsHistory(unittest.TestCase):
 
     def setUp(self):
         self.update = mock.MagicMock()
-        self.context = mock.MagicMock()
     def tearDown(self):
         global array
         array = []
@@ -76,7 +77,7 @@ class TestsHistory(unittest.TestCase):
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
             reply_text = write_history(self.update)
-
+            print(reply_text)
         self.assertEqual(reply_text, ['There are not actions'])
 
 
