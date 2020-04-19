@@ -3,10 +3,10 @@
 
 import logging
 import requests
-from setup import PROXY, TOKEN
+from team_4ever.setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from classes import WorkWithCoronaData,Website
+from team_4ever.classes import WorkWithCoronaData,Website
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -37,7 +37,7 @@ def decorator_error(func):
                 update.message.reply_text(f'Error! Function:{func.__name__}')
     return inner
 
-def write_history(update: Update):
+def write_history(update: Update, array):
     with open("history.txt", "w") as handle:
         history =[]
         if len(array) == 0:
@@ -126,7 +126,7 @@ def error(update: Update, context: CallbackContext):
 @decorator_error
 @analise
 def history(update: Updater, context: CallbackContext):
-    history_data=write_history(update)
+    history_data=write_history(update, array)
     update.message.reply_text("\n".join(history_data))
 
 @decorator_error
