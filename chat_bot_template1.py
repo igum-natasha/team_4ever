@@ -3,10 +3,10 @@
 
 import logging
 import requests
-from team_4ever.setup import PROXY, TOKEN
+from setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from team_4ever.classes import WorkWithCoronaData,Website
+from classes import WorkWithCoronaData,Website
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
