@@ -3,10 +3,10 @@
 
 import logging
 import requests
-from setup import PROXY, TOKEN
+from team_4ever.setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from classes import WorkWithCoronaData,Website
+from team_4ever.classes import WorkWithCoronaData,Website
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -37,9 +37,69 @@ def decorator_error(func):
                 update.message.reply_text(f'Error! Function:{func.__name__}')
     return inner
 
+def write_history(update: Update):
+    with open("history.txt", "w") as handle:
+        history =[]
+        if len(array) == 0:
+            handle.write("There are not actions\n")
+            history.append("There are not actions")
+        elif len(array) >0:
+            handle.write("Last actions are:\n")
+            history.append("Last actions are:")
+            for i in range(0, len(array)):
+                handle.write(f'Action {i+1}:\n')
+                history.append(f'Action {i+1}:')
+                for key in array[i]:
+                    handle.write(key+" : "+array[i][key]+"\n")
+                    history.append(key + ' : ' + array[i][key])
+    return history
 
+def write_facts(update: Updater):
+    web=Website('https://cat-fact.herokuapp.com/facts')
+    s=Website.get_data(web)
+    ma = 0
+    all=s['all']
+    for i in range(len(all)):
+        if all[i]['upvotes'] > ma and all[i]['type']=='cat':
+            ma = all[i]['upvotes']
+            return f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}'
 
-        
+def corona_write(update: Updater):
+    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    WorkWithCoronaData.provinces(corona)
+    for elem in corona.count[:5]:
+        for key, value in corona.prov.items():
+            if value == elem:
+                answer += f"{key} : {value}\n"
+    return answer
+
+def corona_dynamics_write(update: Updater):
+    answer = 'Динамика заражений COVID-19 за два дня для Топ-5 стран:\n'
+    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
+    WorkWithCoronaData.corona_dynamics(corona)
+    WorkWithCoronaData.corona_dynamics(corona1)
+    for elem in corona.count[:5]:
+        for key, value in corona.now.items():
+            for key1, value1 in corona1.now.items():
+                if key == key1 and value[4] == elem:
+                    answer += f'{str(value[0]).upper()}\n'
+                    answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered: {value[3] -value1[3]} Active: {value[4] - value1[4]}\n'
+    return answer
+
+def corona_russia_write(update:Updater):
+    answer = 'Динамика заражений COVID-19 за два дня для России:\n'
+    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
+    WorkWithCoronaData.corona_russia(corona)
+    WorkWithCoronaData.corona_russia(corona1)
+    for key, value in corona.now.items():
+        for key1, value1 in corona1.now.items():
+            answer += f'{str(value[0]).upper()}\n'
+            answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered: {value[3] - value1[3]} Active: {value[4] - value1[4]}\n'
+    return answer
+
 @decorator_error
 @analise
 def start(update: Update, context: CallbackContext):
@@ -52,8 +112,6 @@ def chat_help(update: Update, context: CallbackContext):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Введи команду /start для начала. ')
 
-
-
 @analise
 def echo(update: Update, context: CallbackContext):
     """Echo the user message."""
@@ -64,78 +122,36 @@ def error(update: Update, context: CallbackContext):
     """Log Errors caused by Updates."""
     logger.warning(f'Update {update} caused error {context.error}')
 
+
 @decorator_error
 @analise
 def history(update: Updater, context: CallbackContext):
-    with open("history.txt", "w") as handle:
-        history =[]
-        if len(array) == 0:
-            handle.write("There are not actions\n")
-            update.message.reply_text("There are not actions")
-        elif len(array) >0:
-            handle.write("Last actions are:\n")
-            update.message.reply_text("Last actions are:")
-            for i in range(0, len(array)):
-                handle.write(f'Action {i+1}:\n')
-                history.append(f'Action {i+1}:')
-                for key in array[i]:
-                    handle.write(key+" : "+array[i][key]+"\n")
-                    history.append(key + ' : ' + array[i][key])
-        update.message.reply_text("\n".join(history))
+    history_data=write_history(update)
+    update.message.reply_text("\n".join(history_data))
 
 @decorator_error
 @analise
 def facts(update: Updater, context: CallbackContext):
-    web=Website('https://cat-fact.herokuapp.com/facts')
-    s=Website.get_data(web)
-    ma = 0
-    all=s['all']
-    for i in range(len(all)):
-        if all[i]['upvotes'] > ma and all[i]['type']=='cat':
-            ma = all[i]['upvotes']
-            update.message.reply_text(f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}')
+    text=write_facts(update)
+    update.message.reply_text(text)
 
 @decorator_error
 @analise
 def corona(update: Updater, context: CallbackContext):
-    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
-    corona=WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
-    WorkWithCoronaData.provinces(corona)
-    for elem in corona.count[:5]:
-        for key, value in corona.prov.items():
-            if value == elem:
-                answer += f"{key} : {value}\n"
-    update.message.reply_text(answer)
+   answer=corona_write(update)
+   update.message.reply_text(answer)
 
 @decorator_error
 @analise
 def corona_dynamics(update: Updater, context: CallbackContext):
-    answer='Динамика заражений COVID-19 за два дня для Топ-5 стран:\n'
-    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
-    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
-    WorkWithCoronaData.corona_dynamics(corona)
-    WorkWithCoronaData.corona_dynamics(corona1)
-    for elem in corona.count[:5]:
-        for key,value in corona.now.items():
-            for key1,value1 in corona1.now.items():
-                if key==key1 and value[4]==elem:
-                    answer+=f'{str(value[0]).upper()}\n'
-                    answer+=f'Confirmed: {value[1]-value1[1]} Deaths: {value[2]-value1[2]} Recovered: {value[3]-value1[3]} Active: {value[4]-value1[4]}\n'
+    answer=corona_dynamics_write(update)
     update.message.reply_text(answer)
 
 @decorator_error
 @analise
 def corona_russia(update: Updater, context: CallbackContext):
-    answer='Динамика заражений COVID-19 за два дня для России:\n'
-    corona = WorkWithCoronaData({},[0] * 1000,[],[],{},0)
-    corona1 = WorkWithCoronaData({},[0] * 1000,[],[],{},1)
-    WorkWithCoronaData.corona_russia(corona)
-    WorkWithCoronaData.corona_russia(corona1)
-    for key,value in corona.now.items():
-        for key1,value1 in corona1.now.items():
-                    answer+=f'{str(value[0]).upper()}\n'
-                    answer+=f'Confirmed: {value[1]-value1[1]} Deaths: {value[2]-value1[2]} Recovered: {value[3]-value1[3]} Active: {value[4]-value1[4]}\n'
-    update.message.reply_text(answer)
+   answer=corona_russia_write(update)
+   update.message.reply_text(answer)
 
 @decorator_error
 @analise

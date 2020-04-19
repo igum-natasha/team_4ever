@@ -2,11 +2,15 @@ import csv
 import requests
 import datetime
 class WorkWithCsvTable():
-    def __init__(self,data):
-        self.data=data
+    def __init__(self):
+        self.data=[]
     def write_table(self,file_name):
         with open(file_name, 'wb') as file:
-            writer = csv.DictWriter(file)
+            fieldnames=[]
+            for i in self.data:
+                for keys in i.keys():
+                    fieldnames.append(keys)
+            writer = csv.DictWriter(file,fieldnames)
             writer.writeheader()
             for row in self.data:
                 writer.writerow(row)
@@ -22,7 +26,7 @@ class WorkWithCsvTable():
     def get_data(self):
         return self.data
 
-class WorkWithCoronaData():
+class WorkWithCoronaData:
     def __init__(self,prov,count,data1,table,now,day):
         self.prov=prov
         self.count=count
@@ -44,10 +48,9 @@ class WorkWithCoronaData():
                     self.data1[1] = str(int(self.data1[1]) - 1-self.day)
             else:
                 break
-        corona = open('google.csv', 'wb')
-        corona.write(r.content)
-        corona.close()
-        data_new=WorkWithCsvTable([])
+        with open('google.csv', 'wb') as corona:
+            corona.write(r.content)
+        data_new=WorkWithCsvTable()
         data_new.read_table("google.csv")
         self.table=data_new.get_data()
         if int(self.data1[1]) < 10:
@@ -107,7 +110,7 @@ class WorkWithCoronaData():
 
 
 
-class Website():
+class Website:
     def __init__(self,url):
         self.url=url
 
