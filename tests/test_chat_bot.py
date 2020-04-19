@@ -4,7 +4,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-from team_4ever.chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
+from chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
 
 @analise
 def simple_action(update):
