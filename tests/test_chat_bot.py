@@ -4,7 +4,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-from chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
+from team_4ever.chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
 
 @analise
 def simple_action(update):
@@ -56,7 +56,7 @@ class TestsHistory(unittest.TestCase):
     def test_no_history(self):
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
-            reply_text=write_history(self.update)
+            reply_text=write_history(self.update,[])
         self.assertEqual(reply_text, ['There are not actions'])
 
     @patch('chat_bot_template1.array', new_array1)
@@ -67,7 +67,7 @@ class TestsHistory(unittest.TestCase):
                })
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
-            reply_text=write_history(self.update)
+            reply_text=write_history(self.update,new_array1)
 
         self.assertEqual(reply_text, ['Last actions are:','Action 1:','user : 1','function : func1', 'message : hello'])
 
@@ -76,8 +76,7 @@ class TestsHistory(unittest.TestCase):
         self.update.effective_user.first_name = None
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
-            reply_text = write_history(self.update)
-            print(reply_text)
+            reply_text = write_history(self.update,new_array)
         self.assertEqual(reply_text, ['There are not actions'])
 
 
