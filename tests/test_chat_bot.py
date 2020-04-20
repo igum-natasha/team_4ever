@@ -24,7 +24,7 @@ class TestsLogs(unittest.TestCase):
         self.update.message.text = "hi"
         self.update.effective_user.first_name = "Miki"
         simple_action(self.update)
-        self.assertEqual(array, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])
+        self.assertEqual(array[-1], [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])
 
     def test_no_message(self):
         self.update = mock.MagicMock(spec=['effective_user'])
@@ -57,7 +57,7 @@ class TestsHistory(unittest.TestCase):
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
             reply_text=write_history(self.update,[])
-        self.assertEqual(reply_text, ['There are not actions'])
+        self.assertEqual(reply_text, [])
 
     @patch('chat_bot_template1.array', new_array1)
     def test_history(self):
@@ -69,7 +69,7 @@ class TestsHistory(unittest.TestCase):
         with patch('chat_bot_template1.open', mock_open_handler):
             reply_text=write_history(self.update,new_array1)
 
-        self.assertEqual(reply_text, ['Last actions are:','Action 1:','user : 1','function : func1', 'message : hello'])
+        self.assertEqual(reply_text, ['Action 1:','user : 1','function : func1', 'message : hello'])
 
     @patch('chat_bot_template1.array', new_array)
     def test_history_no_user(self):
@@ -77,7 +77,7 @@ class TestsHistory(unittest.TestCase):
         mock_open_handler = mock.mock_open()
         with patch('chat_bot_template1.open', mock_open_handler):
             reply_text = write_history(self.update,new_array)
-        self.assertEqual(reply_text, ['There are not actions'])
+        self.assertEqual(reply_text, [])
 
 
 if __name__ == '__main__':

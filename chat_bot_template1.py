@@ -42,10 +42,8 @@ def write_history(update: Update, array):
         history =[]
         if len(array) == 0:
             handle.write("There are not actions\n")
-            history.append("There are not actions")
         elif len(array) >0:
             handle.write("Last actions are:\n")
-            history.append("Last actions are:")
             for i in range(0, len(array)):
                 handle.write(f'Action {i+1}:\n')
                 history.append(f'Action {i+1}:')
@@ -127,7 +125,10 @@ def error(update: Update, context: CallbackContext):
 @analise
 def history(update: Updater, context: CallbackContext):
     history_data=write_history(update, array)
-    update.message.reply_text("\n".join(history_data))
+    if len(array)>0:
+        update.message.reply_text("Last actions are:\n"+"\n".join(history_data))
+    else:
+        update.message.reply_text("There are not actions")
 
 @decorator_error
 @analise
