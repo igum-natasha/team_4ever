@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from classes import WorkWithCsvTable,  WorkWithCoronaData, Website
 with open("google0.csv", 'w') as doc:
-    doc.write('')
+    doc.write('Province_State,Country_Region,Confirmed,Deaths,Recovered,Active\nSouth Carolina,US,9,0,0,9')
 with open("google1.csv", 'w') as doc:
     doc.write('')
 class TestsWorkWithCsvTable(unittest.TestCase):
