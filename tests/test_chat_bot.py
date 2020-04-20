@@ -19,7 +19,7 @@ class TestsLogs(unittest.TestCase):
         global array
         array = []
 
-   ''' def test_log_action(self):
+    ''' def test_log_action(self):
         self.update.message.text = 'hi'
         self.update.effective_user.first_name = 'Miki'
 
