@@ -3,7 +3,10 @@ from unittest import mock
 from unittest.mock import patch
 
 from classes import WorkWithCsvTable,  WorkWithCoronaData, Website
-
+with open("google0.csv", 'w') as doc:
+    doc.write('')
+with open("google1.csv", 'w') as doc:
+    doc.write('')
 class TestsWorkWithCsvTable(unittest.TestCase):
     def setUp(self):
         self.table = WorkWithCsvTable()
@@ -28,13 +31,13 @@ class TestsWorkWithCsvTable(unittest.TestCase):
         data=self.table.get_data()
         self.assertEqual(self.table.data, data)
 
-    '''def test_read_table(self):
+    def test_read_table(self):
         self.table.read_table("google0.csv")
         self.assertEqual(self.table.data, [{'Active': '9','Confirmed': '9','Country_Region': 'US','Deaths': '0','Province_State': 'South Carolina','Recovered': '0'}])
 
     def test_read_no_table(self):
         self.table.read_table("google1.csv")
-        self.assertEqual(self.table.data, [])'''
+        self.assertEqual(self.table.data, [])
 
 class TestsWorkWithCorornaData(unittest.TestCase):
     def setUp(self):
@@ -54,6 +57,7 @@ class TestsWorkWithCorornaData(unittest.TestCase):
         data_new.read_table("google.csv")
         data=data_new.get_data()
         self.assertEqual(self.corona.table, data)
+
 
 class TestsFacts(unittest.TestCase):
 

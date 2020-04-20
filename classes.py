@@ -98,10 +98,8 @@ class WorkWithCoronaData:
     def corona_russia(self):
         self.get_table()
         k = 0
-        buf = []
         for row in self.table:
             if row["Country_Region"]=="Russia":
-                buf.append(row["Country_Region"])
                 self.now[k] = [row["Country_Region"],
                           int(row['Confirmed']),
                           int(row['Deaths']),
