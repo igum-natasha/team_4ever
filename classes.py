@@ -115,9 +115,12 @@ class Website:
         self.url=url
 
     def get_data(self):
-        r = requests.get(self.url)
-        r.encoding = "utf-8"
-        s = r.json()
-        return s
+        try:
+            r = requests.get(self.url)
+            r.encoding = "utf-8"
+            if r.status_code==200:
+                return r.json()
+        except Exception as exc:
+            print(f'Error {exc}')
 
 

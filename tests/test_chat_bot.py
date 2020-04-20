@@ -3,7 +3,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-from chat_bot_template1 import array, write_history,facts,corona,corona_dynamics,corona_russia,analise
+from chat_bot_template1 import array, write_history,write_facts,corona,corona_dynamics,corona_russia,analise
 
 @analise
 def simple_action(update):
@@ -79,6 +79,20 @@ class TestsHistory(unittest.TestCase):
             reply_text = write_history(self.update,new_array)
         self.assertEqual(reply_text, [])
 
+
+class TestsWriteFacts(unittest.TestCase):
+    def setUp(self):
+        self.update = mock.MagicMock()
+    def tearDown(self):
+        web=''
+
+    def test_bad_url(self):
+        web = write_facts(self.update,'http://google.com')
+        self.assertEqual(web, '')
+
+    def test_ok_url(self):
+        web = write_facts(self.update,'https://cat-fact.herokuapp.com/facts')
+        self.assertNotEqual(web, "")
 
 if __name__ == '__main__':
     unittest.main()

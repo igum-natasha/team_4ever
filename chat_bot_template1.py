@@ -52,15 +52,21 @@ def write_history(update: Update, array):
                     history.append(key + ' : ' + array[i][key])
     return history
 
-def write_facts(update: Updater):
-    web=Website('https://cat-fact.herokuapp.com/facts')
+def write_facts(update: Updater,url):
+    web=Website(url)
     s=Website.get_data(web)
-    ma = 0
-    all=s['all']
-    for i in range(len(all)):
-        if all[i]['upvotes'] > ma and all[i]['type']=='cat':
-            ma = all[i]['upvotes']
-            return f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}'
+    if s!=None:
+        ma = 0
+        all = s['all']
+        data = ''
+        for i in range(len(all)):
+            if all[i]['upvotes'] > ma and all[i]['type']=='cat':
+                ma = all[i]['upvotes']
+                data = ''
+                data += f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n{all[i]["text"]}\nLikes: {all[i]["upvotes"]}'
+        return data
+    else:
+        return ''
 
 def corona_write(update: Updater):
     answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
@@ -133,7 +139,8 @@ def history(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def facts(update: Updater, context: CallbackContext):
-    text=write_facts(update)
+    url='https://cat-fact.herokuapp.com/facts'
+    text=write_facts(update,url)
     update.message.reply_text(text)
 
 @decorator_error

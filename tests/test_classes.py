@@ -24,12 +24,16 @@ class TestsWorkWithCsvTable(unittest.TestCase):
         with patch('classes.open', mock_open_handler):
             self.table.write_table("history,txt")
 
+    def test_get_data(self):
+        data=self.table.get_data()
+        self.assertEqual(self.table.data, data)
+
     def test_read_table(self):
-        self.table.read_table("tests\google0.csv")
+        self.table.read_table("google0.csv")
         self.assertEqual(self.table.data, [{'Active': '9','Confirmed': '9','Country_Region': 'US','Deaths': '0','Province_State': 'South Carolina','Recovered': '0'}])
 
     def test_read_no_table(self):
-        self.table.read_table("tests\google1.csv")
+        self.table.read_table("google1.csv")
         self.assertEqual(self.table.data, [])
 
 class TestsWorkWithCorornaData(unittest.TestCase):
@@ -43,6 +47,28 @@ class TestsWorkWithCorornaData(unittest.TestCase):
         self.table = []
         self.now = []
         self.day = 0
+
+    def test_corona(self):
+        self.corona.get_table()
+        data_new = WorkWithCsvTable()
+        data_new.read_table("google.csv")
+        data=data_new.get_data()
+        self.assertEqual(self.corona.table, data)
+
+class TestsFacts(unittest.TestCase):
+
+    def test_bad_request(self):
+        with patch('team_4ever.classes.requests.get') as mock_get:
+            mock_get.return_value.status_code = 0
+            facts = Website('http://google.com').get_data()
+        self.assertEqual(facts, None)
+
+    def test_ok_request(self):
+        with patch('team_4ever.classes.requests.get') as mock_get:
+            mock_get.return_value.status_code = 200
+            mock_get.return_value.json.return_value = 'hello'
+            data = Website('http://google.com').get_data()
+        self.assertEqual(data, 'hello')
 
 
 if __name__ == '__main__':
