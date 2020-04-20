@@ -24,15 +24,13 @@ class TestsWorkWithCsvTable(unittest.TestCase):
         with patch('classes.open', mock_open_handler):
             self.table.write_table("history,txt")
 
-
-
-    '''def test_read_table(self):
-        self.table.read_table("google0.csv")
+    def test_read_table(self):
+        self.table.read_table("tests\google0.csv")
         self.assertEqual(self.table.data, [{'Active': '9','Confirmed': '9','Country_Region': 'US','Deaths': '0','Province_State': 'South Carolina','Recovered': '0'}])
 
     def test_read_no_table(self):
-        self.table.read_table("google1.csv")
-        self.assertEqual(self.table.data, [])'''
+        self.table.read_table("tests\google1.csv")
+        self.assertEqual(self.table.data, [])
 
 class TestsWorkWithCorornaData(unittest.TestCase):
     def setUp(self):
