@@ -105,12 +105,7 @@ class WorkWithCoronaData:
         self.get_table()
         k = 0
         for row in self.table:
-<<<<<<< HEAD
-            if row["Country_Region"]=="Russia":
-=======
             if row["Country_Region"] == "Russia":
-                buf.append(row["Country_Region"])
->>>>>>> Natasha
                 self.now[k] = [row["Country_Region"],
                                int(row['Confirmed']),
                                int(row['Deaths']),
@@ -126,16 +121,7 @@ class Website:
         try:
             r = requests.get(self.url)
             r.encoding = "utf-8"
-<<<<<<< HEAD
-            if r.status_code==200:
-                return r.json()
-        except Exception as exc:
-            print(f'Error {exc}')
-
-
-=======
             if r.status_code == 200:
                 return r.json()
         except Exception as exc:
             print(f'Error {exc}')
->>>>>>> Natasha
