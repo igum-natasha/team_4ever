@@ -32,7 +32,7 @@ class TestsWorkWithCsvTable(unittest.TestCase):
             self.table.write_table("history,txt")
 
     def test_get_data(self):
-        data=self.table.get_data()
+        data = self.table.get_data()
         self.assertEqual(self.table.data, data)
 
     def test_read_table(self):
