@@ -10,6 +10,7 @@ with open("google0.csv", 'w') as doc:
 with open("google1.csv", 'w') as doc:
     doc.write('')
 
+
 class TestsWorkWithCsvTable(unittest.TestCase):
     def setUp(self):
         self.table = WorkWithCsvTable()
@@ -30,15 +31,14 @@ class TestsWorkWithCsvTable(unittest.TestCase):
         with patch('classes.open', mock_open_handler):
             self.table.write_table("history,txt")
 
-
     def test_get_data(self):
         data=self.table.get_data()
         self.assertEqual(self.table.data, data)
 
     def test_read_table(self):
         self.table.read_table("google0.csv")
-        self.assertEqual(self.table.data, [{'Active': '9','Confirmed': '9','Country_Region': 'US','Deaths': '0',
-        'Province_State': 'South Carolina','Recovered': '0'}])
+        self.assertEqual(self.table.data, [{'Active': '9', 'Confirmed': '9', 'Country_Region': 'US', 'Deaths': '0',
+                                            'Province_State': 'South Carolina', 'Recovered': '0'}])
 
     def test_read_no_table(self):
         self.table.read_table("google1.csv")
@@ -61,7 +61,7 @@ class TestsWorkWithCoronaData(unittest.TestCase):
         self.corona.get_table()
         data_new = WorkWithCsvTable()
         data_new.read_table("google.csv")
-        data=data_new.get_data()
+        data = data_new.get_data()
         self.assertEqual(self.corona.table, data)
 
 

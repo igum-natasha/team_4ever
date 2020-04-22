@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import requests
 from setup import PROXY, TOKEN
 from telegram import Bot, Update
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
@@ -59,23 +58,23 @@ def write_history(update: Update, array):
     return history
 
 
-
 def write_facts(update: Updater, url):
     web = Website(url)
     s = Website.get_data(web)
-    if s != None:
+    if s is not None:
         ma = 0
-        all = s['all']
+        al = s['all']
         data = ''
-        for i in range(len(all)):
-            if all[i]['upvotes'] > ma and all[i]['type'] == 'cat':
-                ma = all[i]['upvotes']
+        for i in range(len(al)):
+            if al[i]['upvotes'] > ma and al[i]['type'] == 'cat':
+                ma = al[i]['upvotes']
                 data = ''
-                data += f'User: {all[i]["user"]["name"]["first"]} {all[i]["user"]["name"]["last"]}\n' \
-                    f'{all[i]["text"]}\nLikes: {all[i]["upvotes"]}'
+                data += f'User: {al[i]["user"]["name"]["first"]} {al[i]["user"]["name"]["last"]}\n' \
+                    f'{al[i]["text"]}\nLikes: {al[i]["upvotes"]}'
         return data
     else:
         return ''
+
 
 def corona_write(update: Updater):
     answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
@@ -157,8 +156,8 @@ def history(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def facts(update: Updater, context: CallbackContext):
-    url='https://cat-fact.herokuapp.com/facts'
-    text=write_facts(update,url)
+    url = 'https://cat-fact.herokuapp.com/facts'
+    text = write_facts(update, url)
     update.message.reply_text(text)
 
 
