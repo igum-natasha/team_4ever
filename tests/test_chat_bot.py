@@ -4,7 +4,7 @@ from unittest import mock
 from unittest.mock import patch
 
 
-from chat_bot_template1 import array, write_history, facts, corona, corona_dynamics, corona_russia, analise
+from chat_bot_template1 import array, write_history, facts, corona, corona_dynamics, corona_russia, analise, write_facts
 
 
 @analise
