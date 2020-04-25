@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from team_4ever.setup import PROXY, TOKEN
+from setup import PROXY, TOKEN
 from telegram import Bot, Update
 import datetime
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from team_4ever.classes import WorkWithCoronaData, Website, WorkWithCsvTable, WriteDb
+from classes import WorkWithCoronaData, Website, WorkWithCsvTable, WriteDb
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
