@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from setup import PROXY, TOKEN
+from team_4ever.setup import PROXY, TOKEN
 from telegram import Bot, Update
+import datetime
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from classes import WorkWithCoronaData, Website
+from team_4ever.classes import WorkWithCoronaData, Website, WorkWithCsvTable, WriteDb
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -77,43 +78,86 @@ def write_facts(update: Updater, url):
 
 
 def corona_write(update: Updater):
-    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
-    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
+    answer = ''
+    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     WorkWithCoronaData.provinces(corona)
+    data_new = WorkWithCsvTable(data=[])
+    file = 'data\\' + corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'prov' + '.csv'
     for elem in corona.count[:5]:
-        for key, value in corona.prov.items():
-            if value == elem:
-                answer += f"{key} : {value}\n"
+        for row in corona.prov:
+            print(row)
+            for key,value in row.items():
+                if value[1] == elem:
+                    data_new.data.append({'Place': value[0], 'Active': value[1]})
+                    answer += f"{value[0]}: {value[1]}\n"
+    data_new.write_table(file)
+    db = WriteDb()
+    db.file = file
+    db.write_db(corona.data1[0] + '-' + corona.data1[1] + '-' + corona.data1[2], 'prov')
     return answer
 
 
 def corona_dynamics_write(update: Updater):
-    answer = 'Динамика заражений COVID-19 за два дня для Топ-5 стран:\n'
-    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
-    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
+    answer = ''
+    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
     WorkWithCoronaData.corona_dynamics(corona)
     WorkWithCoronaData.corona_dynamics(corona1)
+    data_1 = []
+    data_new = WorkWithCsvTable(data=[])
+    file = 'data\\' + corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'dyn' + '.csv'
     for elem in corona.count[:5]:
         for key, value in corona.now.items():
             for key1, value1 in corona1.now.items():
                 if key == key1 and value[4] == elem:
+                    data_new.data.append({"Country_Region": value[0], "Confirmed": value[1],
+                                          "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
+                    data_1.append({"Country_Region": value1[0], "Confirmed": value1[1],
+                                   "Deaths": value1[2], "Recovered": value1[3], "Active": value1[4]})
                     answer += f'{str(value[0]).upper()}\n'
                     answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered:' \
                         f' {value[3] -value1[3]} Active: {value[4] - value1[4]}\n'
+    data_new.write_table(file)
+    db = WriteDb()
+    db.file = file
+    db.write_db(corona.data1[0] + '-' + corona.data1[1] + '-' + corona.data1[2], 'dyn')
+    data_new.data = data_1
+    file1 = 'data\\' + corona1.data1[0] + '-' + corona1.data1[1] + '-' + corona1.data1[2] + 'dyn' + '.csv'
+    data_new.write_table(file1)
+    db = WriteDb()
+    db.file = file1
+    db.write_db(corona1.data1[0] + '-' + corona1.data1[1] + '-' + corona1.data1[2], 'dyn')
     return answer
 
 
 def corona_russia_write(update: Updater):
-    answer = 'Динамика заражений COVID-19 за два дня для России:\n'
-    corona = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 0)
-    corona1 = WorkWithCoronaData({}, [0] * 1000, [], [], {}, 1)
+    answer=''
+    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
     WorkWithCoronaData.corona_russia(corona)
     WorkWithCoronaData.corona_russia(corona1)
+    data_new = WorkWithCsvTable(data=[])
+    file = 'data\\'+corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'rus' + '.csv'
+    data_1 = []
     for key, value in corona.now.items():
         for key1, value1 in corona1.now.items():
+            data_new.data.append({"Country_Region": value[0], "Confirmed": value[1],
+                                  "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
+            data_1.append({"Country_Region": value1[0], "Confirmed": value1[1],
+                           "Deaths": value1[2], "Recovered": value1[3], "Active": value1[4]})
             answer += f'{str(value[0]).upper()}\n'
             answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered: ' \
                 f'{value[3] - value1[3]} Active: {value[4] - value1[4]}\n'
+    data_new.write_table(file)
+    db = WriteDb()
+    db.file = file
+    db.write_db(corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2], 'rus')
+    data_new.data = data_1
+    file1 = 'data\\' + corona1.data1[0]+'-'+corona1.data1[1]+'-'+corona1.data1[2] + 'rus' + '.csv'
+    data_new.write_table(file1)
+    db = WriteDb()
+    db.file = file1
+    db.write_db(corona1.data1[0]+'-'+corona1.data1[1]+'-'+corona1.data1[2], 'rus')
     return answer
 
 
@@ -164,21 +208,69 @@ def facts(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def corona(update: Updater, context: CallbackContext):
-    answer = corona_write(update)
+    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+    db = WriteDb()
+    data1 = datetime.date.today().strftime("%m-%d-%Y")
+    day = str(int(data1[3]) * 10 + int(data1[4]) - 1)
+    data2 = data1[:3] + day + data1[5:]
+    data = db.find_doc(data2, 'prov')
+    if data:
+        for row in data:
+            for key, value in row.items():
+                if key != '_id' and (key == "Place"):
+                    answer += f"{value}:"
+                elif key != '_id':
+                    answer += f"{value}\n"
+    else:
+        answer += corona_write(update)
     update.message.reply_text(answer)
 
 
 @decorator_error
 @analise
 def corona_dynamics(update: Updater, context: CallbackContext):
-    answer = corona_dynamics_write(update)
+    answer = 'Динамика заражений COVID-19 за два дня для Топ-5 стран:\n'
+    db = WriteDb()
+    data1 = datetime.date.today().strftime("%m-%d-%Y")
+    data = db.find_doc(data1, 'dyn')
+    day = str(int(data1[3]) * 10 + int(data1[4]) - 1)
+    data2 = data1[:3] + day + data1[5:]
+    data_1 = db.find_doc(data2, 'dyn')
+    if data and data_1:
+        for key, value in data.items():
+            for key1, value1 in data_1.items():
+                if key == key1 and key != '_id':
+                    if key == "Country_Region":
+                        answer += f'{str(value).upper()}\n'
+                    else:
+                        answer += f'{key}: {value - value1} '
+        answer += '\n'
+    else:
+        answer += corona_dynamics_write(update)
     update.message.reply_text(answer)
 
 
 @decorator_error
 @analise
 def corona_russia(update: Updater, context: CallbackContext):
-    answer = corona_russia_write(update)
+    answer = 'Динамика заражений COVID-19 за два дня для России:\n'
+    db = WriteDb()
+    data1 = datetime.date.today().strftime("%m-%d-%Y")
+    data = db.find_doc(data1, 'rus')
+    day = str(int(data1[3]) * 10 + int(data1[4]) - 1)
+    data2 = data1[:3] + day + data1[5:]
+    data_1 = db.find_doc(data2, 'rus')
+    if data and data_1:
+        for key, value in data.items():
+            for key1, value1 in data_1.items():
+                if key == key1 and key != '_id':
+                    if key == "Country_Region":
+                        answer += f'{str(value).upper()}\n'
+                    else:
+                        answer += f'{key}: {value-value1} '
+        answer += '\n'
+    else:
+        answer += corona_russia_write(update)
     update.message.reply_text(answer)
 
 

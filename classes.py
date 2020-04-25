@@ -1,21 +1,26 @@
 import csv
 import requests
 import datetime
+from pymongo import MongoClient
+import pandas as pd
 
 
-class WorkWithCsvTable():
-    def __init__(self):
-        self.data = []
+class WorkWithCsvTable:
+    def __init__(self, data):
+        self.data = data
 
     def write_table(self, file_name):
-        with open(file_name, 'wb') as file:
+        with open(file_name, 'w') as file:
             fieldnames = []
             for i in self.data:
                 for keys in i.keys():
-                    fieldnames.append(keys)
+                    if keys not in fieldnames:
+                        fieldnames.append(keys)
             writer = csv.DictWriter(file, fieldnames)
+            print(fieldnames)
             writer.writeheader()
             for row in self.data:
+                print(row)
                 writer.writerow(row)
 
     def read_table(self, file_name):
@@ -55,25 +60,28 @@ class WorkWithCoronaData:
                     self.data1[1] = str(int(self.data1[1]) - 1 - self.day)
             else:
                 break
-        with open('google.csv', 'wb') as corona:
+        print(self.data1)
+        with open('data\\google.csv', 'wb') as corona:
             corona.write(r.content)
-        data_new = WorkWithCsvTable()
-        data_new.read_table("google.csv")
-        self.table = data_new.get_data()
-        if int(self.data1[1]) < 10:
+        data_new = WorkWithCsvTable(data=[])
+        data_new.read_table("data\\google.csv")
+        self.table = data_new.data
+        '''if int(self.data1[1]) < 10:
             self.data1[1] = '0' + str(int(self.data1[1]) - 1)
         else:
-            self.data1[1] = str(int(self.data1[1]) - 1)
+            self.data1[1] = str(int(self.data1[1]) - 1)'''
+        print(self.data1)
 
     def provinces(self):
         self.get_table()
         for row in self.table:
             if int(row['Active']) != 0:
                 if row['Province_State'] != '':
-                    self.prov[f"{row['Province_State']}"] = int(row['Active'])
+                    self.prov.append({'Province_State': [row['Province_State'], int(row['Active'])]})
                 else:
-                    self.prov[f"{row['Country_Region']}"] = int(row['Active'])
+                    self.prov.append({'Country_Region': [row['Country_Region'], int(row['Active'])]})
                 self.count.append(int(row['Active']))
+        print(self.prov)
         self.count.sort(reverse=True)
 
     def corona_dynamics(self):
@@ -111,6 +119,7 @@ class WorkWithCoronaData:
                                int(row['Deaths']),
                                int(row['Recovered']),
                                int(row["Active"])]
+        print("russia")
 
 
 class Website:
@@ -118,10 +127,33 @@ class Website:
         self.url = url
 
     def get_data(self):
-        try:
-            r = requests.get(self.url)
-            r.encoding = "utf-8"
-            if r.status_code == 200:
-                return r.json()
-        except Exception as exc:
-            print(f'Error {exc}')
+        r = requests.get(self.url)
+        r.encoding = "utf-8"
+        if r.status_code == 200:
+            return r.json()
+
+
+class WriteDb:
+    def __init__(self):
+        self.file = ''
+        self.data=[]
+    def write_db(self, day: str, db_name: str):
+        client = MongoClient()
+        db = client[db_name]
+        day = db[day]
+        df = pd.read_csv(self.file)
+        records_ = df.to_dict(orient='records')
+        day.insert_many(records_)
+
+    def find_doc(self, day: str, db_name: str):
+        client = MongoClient()
+        db = client[db_name]
+        if day in db.collection_names():
+            results=1
+        else:
+            results=-1
+        for x in db[day].find():
+            self.data.append(x)
+        if results != -1:
+            return self.data
+        return 0
