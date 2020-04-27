@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 import mongomock
+import pandas
 
 from classes import WorkWithCsvTable,  WorkWithCoronaData, Website, WriteDb
 
@@ -60,13 +61,16 @@ class TestsWorkWithCoronaData(unittest.TestCase):
         self.now = []
         self.day = 0
 
-    def test_corona(self):
+    def test_corona_data(self):
         self.corona.get_table()
         data_new = WorkWithCsvTable(data=[])
         data_new.read_table("google.csv")
         data = data_new.get_data()
         self.assertEqual(self.corona.table, data)
 
+    def test_corona_no_data(self):
+        self.corona.get_table()
+        self.assertNotEqual(self.corona.table, [])
 
 class TestsFacts(unittest.TestCase):
 
@@ -99,6 +103,12 @@ class TestsDB(unittest.TestCase):
         self.assertEqual(db_example['1'].find_one({'Province_State': 'South Carolina'}, {'_id': 0}),
                          {'Province_State': 'South Carolina', 'Country_Region': 'US', 'Confirmed': 9, 'Deaths': 0,
                           'Recovered': 0, 'Active': 9})
+
+    def test_write_no_db(self):
+        self.db.client = mongomock.MongoClient("127.0.0.1", 27017)
+        self.db.file = 'data_for_tests\\google1.csv'
+        with self.assertRaises(pandas.errors.EmptyDataError):
+            self.db.write_db('1', '12')
 
     def test_bad_find_doc(self):
         self.db.client = mongomock.MongoClient("127.0.0.1", 27017)
