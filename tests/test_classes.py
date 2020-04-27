@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import patch
 from pymongo import MongoClient
 
-from team_4ever.classes import WorkWithCsvTable,  WorkWithCoronaData, Website, WriteDb
+from classes import WorkWithCsvTable,  WorkWithCoronaData, Website, WriteDb
 
 with open("data_for_tests\\google0.csv", 'w') as doc:
     doc.write('Province_State,Country_Region,Confirmed,Deaths,Recovered,Active\nSouth Carolina,US,9,0,0,9')
