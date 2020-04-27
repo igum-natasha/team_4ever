@@ -17,10 +17,8 @@ class WorkWithCsvTable:
                     if keys not in fieldnames:
                         fieldnames.append(keys)
             writer = csv.DictWriter(file, fieldnames)
-            print(fieldnames)
             writer.writeheader()
             for row in self.data:
-                print(row)
                 writer.writerow(row)
 
     def read_table(self, file_name):
@@ -60,17 +58,15 @@ class WorkWithCoronaData:
                     self.data1[1] = str(int(self.data1[1]) - 1 - self.day)
             else:
                 break
-        print(self.data1)
-        with open('data\\google.csv', 'wb') as corona:
+        with open('google.csv', 'wb') as corona:
             corona.write(r.content)
         data_new = WorkWithCsvTable(data=[])
-        data_new.read_table("data\\google.csv")
+        data_new.read_table("google.csv")
         self.table = data_new.data
         '''if int(self.data1[1]) < 10:
             self.data1[1] = '0' + str(int(self.data1[1]) - 1)
         else:
             self.data1[1] = str(int(self.data1[1]) - 1)'''
-        print(self.data1)
 
     def provinces(self):
         self.get_table()
@@ -81,7 +77,6 @@ class WorkWithCoronaData:
                 else:
                     self.prov.append({'Country_Region': [row['Country_Region'], int(row['Active'])]})
                 self.count.append(int(row['Active']))
-        print(self.prov)
         self.count.sort(reverse=True)
 
     def corona_dynamics(self):
@@ -119,7 +114,6 @@ class WorkWithCoronaData:
                                int(row['Deaths']),
                                int(row['Recovered']),
                                int(row["Active"])]
-        print("russia")
 
 
 class Website:
@@ -136,22 +130,24 @@ class Website:
 class WriteDb:
     def __init__(self):
         self.file = ''
-        self.data=[]
+        self.data = []
+
     def write_db(self, day: str, db_name: str):
         client = MongoClient()
         db = client[db_name]
-        day = db[day]
-        df = pd.read_csv(self.file)
-        records_ = df.to_dict(orient='records')
-        day.insert_many(records_)
+        if day not in db.list_collection_names():
+            day = db[day]
+            df = pd.read_csv(self.file)
+            records_ = df.to_dict(orient='records')
+            day.insert_many(records_)
 
     def find_doc(self, day: str, db_name: str):
         client = MongoClient()
         db = client[db_name]
-        if day in db.collection_names():
-            results=1
+        if day in db.list_collection_names():
+            results = 1
         else:
-            results=-1
+            results = -1
         for x in db[day].find():
             self.data.append(x)
         if results != -1:

@@ -86,7 +86,7 @@ def corona_write(update: Updater):
     for elem in corona.count[:5]:
         for row in corona.prov:
             print(row)
-            for key,value in row.items():
+            for key, value in row.items():
                 if value[1] == elem:
                     data_new.data.append({'Place': value[0], 'Active': value[1]})
                     answer += f"{value[0]}: {value[1]}\n"
@@ -131,7 +131,7 @@ def corona_dynamics_write(update: Updater):
 
 
 def corona_russia_write(update: Updater):
-    answer=''
+    answer = ''
     corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
     WorkWithCoronaData.corona_russia(corona)

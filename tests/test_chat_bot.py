@@ -13,6 +13,7 @@ def simple_action(update):
 
 new_array = []
 new_array1 = []
+new_array2 = []
 
 
 class TestsLogs(unittest.TestCase):
@@ -23,12 +24,12 @@ class TestsLogs(unittest.TestCase):
         global array
         array = []
 
-    ''' def test_log_action(self):
+    @patch('chat_bot_template1.array', new_array2)
+    def test_log_action(self):
         self.update.message.text = 'hi'
         self.update.effective_user.first_name = 'Miki'
-
         simple_action(self.update)
-        self.assertEqual(array, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])'''
+        self.assertEqual(new_array2, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])
 
     def test_no_message(self):
         self.update = mock.MagicMock(spec=['effective_user'])
