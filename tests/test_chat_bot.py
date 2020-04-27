@@ -2,9 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-
-from chat_bot_template1 import array, write_history, analise, write_facts
-
+from chat_bot_template1 import write_history, analise, write_facts, write_database
 
 @analise
 def simple_action(update):
