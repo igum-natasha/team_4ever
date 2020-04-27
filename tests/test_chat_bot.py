@@ -2,9 +2,7 @@ import unittest
 from unittest import mock
 from unittest.mock import patch
 
-
-from chat_bot_template1 import array, write_history, analise, write_facts
-
+from chat_bot_template1 import write_history, analise, write_facts, write_database
 
 @analise
 def simple_action(update):
@@ -13,6 +11,7 @@ def simple_action(update):
 
 new_array = []
 new_array1 = []
+new_array2 = []
 
 
 class TestsLogs(unittest.TestCase):
@@ -23,12 +22,12 @@ class TestsLogs(unittest.TestCase):
         global array
         array = []
 
-    ''' def test_log_action(self):
+    @patch('chat_bot_template1.array', new_array2)
+    def test_log_action(self):
         self.update.message.text = 'hi'
         self.update.effective_user.first_name = 'Miki'
-
         simple_action(self.update)
-        self.assertEqual(array, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])'''
+        self.assertEqual(new_array2, [{'user': 'Miki', 'function': 'simple_action', 'message': 'hi'}])
 
     def test_no_message(self):
         self.update = mock.MagicMock(spec=['effective_user'])
@@ -87,7 +86,7 @@ class TestsWriteFacts(unittest.TestCase):
         self.update = mock.MagicMock()
 
     def test_bad_url(self):
-        web = write_facts(self.update, 'http://google.com')
+        web = write_facts(self.update, 'http://hi.com')
         self.assertEqual(web, '')
 
     def test_ok_url(self):

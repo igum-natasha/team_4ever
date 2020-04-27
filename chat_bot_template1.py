@@ -77,23 +77,28 @@ def write_facts(update: Updater, url):
         return ''
 
 
+def write_database(direct, name, ind, data):
+    data_new = WorkWithCsvTable(data=[])
+    file = direct+name[0]+'-'+name[1]+'-'+name[2]+ind+'.csv'
+    data_new.data = data
+    data_new.write_table(file)
+    db = WriteDb()
+    db.file = file
+    db.write_db(name[0] + '-' + name[1] + '-' + name[2], ind)
+
+
 def corona_write(update: Updater):
     answer = ''
     corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     WorkWithCoronaData.provinces(corona)
-    data_new = WorkWithCsvTable(data=[])
-    file = 'data\\' + corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'prov' + '.csv'
+    data = []
     for elem in corona.count[:5]:
         for row in corona.prov:
-            print(row)
-            for key,value in row.items():
+            for key, value in row.items():
                 if value[1] == elem:
-                    data_new.data.append({'Place': value[0], 'Active': value[1]})
+                    data.append({'Place': value[0], 'Active': value[1]})
                     answer += f"{value[0]}: {value[1]}\n"
-    data_new.write_table(file)
-    db = WriteDb()
-    db.file = file
-    db.write_db(corona.data1[0] + '-' + corona.data1[1] + '-' + corona.data1[2], 'prov')
+    write_database("data\\", corona.data1, 'prov', data)
     return answer
 
 
@@ -103,61 +108,41 @@ def corona_dynamics_write(update: Updater):
     corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
     WorkWithCoronaData.corona_dynamics(corona)
     WorkWithCoronaData.corona_dynamics(corona1)
-    data_1 = []
-    data_new = WorkWithCsvTable(data=[])
-    file = 'data\\' + corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'dyn' + '.csv'
+    data_1, data = [], []
     for elem in corona.count[:5]:
         for key, value in corona.now.items():
             for key1, value1 in corona1.now.items():
                 if key == key1 and value[4] == elem:
-                    data_new.data.append({"Country_Region": value[0], "Confirmed": value[1],
-                                          "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
+                    data.append({"Country_Region": value[0], "Confirmed": value[1],
+                                "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
                     data_1.append({"Country_Region": value1[0], "Confirmed": value1[1],
                                    "Deaths": value1[2], "Recovered": value1[3], "Active": value1[4]})
                     answer += f'{str(value[0]).upper()}\n'
                     answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered:' \
                         f' {value[3] -value1[3]} Active: {value[4] - value1[4]}\n'
-    data_new.write_table(file)
-    db = WriteDb()
-    db.file = file
-    db.write_db(corona.data1[0] + '-' + corona.data1[1] + '-' + corona.data1[2], 'dyn')
-    data_new.data = data_1
-    file1 = 'data\\' + corona1.data1[0] + '-' + corona1.data1[1] + '-' + corona1.data1[2] + 'dyn' + '.csv'
-    data_new.write_table(file1)
-    db = WriteDb()
-    db.file = file1
-    db.write_db(corona1.data1[0] + '-' + corona1.data1[1] + '-' + corona1.data1[2], 'dyn')
+    write_database('data\\', corona.data1, 'dyn', data)
+    write_database('data\\', corona1.data1, 'dyn', data_1)
     return answer
 
 
 def corona_russia_write(update: Updater):
-    answer=''
+    answer = ''
     corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
     WorkWithCoronaData.corona_russia(corona)
     WorkWithCoronaData.corona_russia(corona1)
-    data_new = WorkWithCsvTable(data=[])
-    file = 'data\\'+corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2]+'rus' + '.csv'
-    data_1 = []
+    data_1, data = [], []
     for key, value in corona.now.items():
         for key1, value1 in corona1.now.items():
-            data_new.data.append({"Country_Region": value[0], "Confirmed": value[1],
-                                  "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
+            data.append({"Country_Region": value[0], "Confirmed": value[1],
+                        "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
             data_1.append({"Country_Region": value1[0], "Confirmed": value1[1],
                            "Deaths": value1[2], "Recovered": value1[3], "Active": value1[4]})
             answer += f'{str(value[0]).upper()}\n'
             answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered: ' \
                 f'{value[3] - value1[3]} Active: {value[4] - value1[4]}\n'
-    data_new.write_table(file)
-    db = WriteDb()
-    db.file = file
-    db.write_db(corona.data1[0]+'-'+corona.data1[1]+'-'+corona.data1[2], 'rus')
-    data_new.data = data_1
-    file1 = 'data\\' + corona1.data1[0]+'-'+corona1.data1[1]+'-'+corona1.data1[2] + 'rus' + '.csv'
-    data_new.write_table(file1)
-    db = WriteDb()
-    db.file = file1
-    db.write_db(corona1.data1[0]+'-'+corona1.data1[1]+'-'+corona1.data1[2], 'rus')
+    write_database('data\\', corona.data1, 'rus', data)
+    write_database('data\\', corona1.data1, 'rus', data_1)
     return answer
 
 
