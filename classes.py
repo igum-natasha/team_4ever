@@ -125,16 +125,18 @@ class Website:
         r.encoding = "utf-8"
         if r.status_code == 200:
             return r.json()
+        else:
+            return None
 
 
 class WriteDb:
     def __init__(self):
+        self.client = MongoClient()
         self.file = ''
         self.data = []
 
     def write_db(self, day: str, db_name: str):
-        client = MongoClient()
-        db = client[db_name]
+        db = self.client[db_name]
         if day not in db.list_collection_names():
             day = db[day]
             df = pd.read_csv(self.file)
@@ -142,8 +144,7 @@ class WriteDb:
             day.insert_many(records_)
 
     def find_doc(self, day: str, db_name: str):
-        client = MongoClient()
-        db = client[db_name]
+        db = self.client[db_name]
         if day in db.list_collection_names():
             results = 1
         else:

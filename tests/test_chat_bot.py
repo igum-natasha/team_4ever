@@ -88,7 +88,7 @@ class TestsWriteFacts(unittest.TestCase):
         self.update = mock.MagicMock()
 
     def test_bad_url(self):
-        web = write_facts(self.update, 'http://google.com')
+        web = write_facts(self.update, 'http://hi.com')
         self.assertEqual(web, '')
 
     def test_ok_url(self):

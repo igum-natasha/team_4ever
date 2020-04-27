@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 from unittest.mock import patch
-from pymongo import MongoClient
+import mongomock
 
 from classes import WorkWithCsvTable,  WorkWithCoronaData, Website, WriteDb
 
@@ -63,7 +63,7 @@ class TestsWorkWithCoronaData(unittest.TestCase):
     def test_corona(self):
         self.corona.get_table()
         data_new = WorkWithCsvTable(data=[])
-        data_new.read_table("data_for_tests\\google2_0.csv")
+        data_new.read_table("google.csv")
         data = data_new.get_data()
         self.assertEqual(self.corona.table, data)
 
@@ -92,8 +92,8 @@ class TestsDB(unittest.TestCase):
         self.db.file = ''
 
     def test_write_db(self):
-        client = MongoClient()
-        db_example = client['12']
+        self.db.client = mongomock.MongoClient("127.0.0.1", 27017)
+        db_example = self.db.client['12']
         self.db.file = 'data_for_tests\\google0.csv'
         self.db.write_db('1', '12')
         self.assertEqual(db_example['1'].find_one({'Province_State': 'South Carolina'}, {'_id': 0}),
@@ -101,9 +101,13 @@ class TestsDB(unittest.TestCase):
                           'Recovered': 0, 'Active': 9})
 
     def test_bad_find_doc(self):
+        self.db.client = mongomock.MongoClient("127.0.0.1", 27017)
         self.assertEqual(self.db.find_doc('2', '12'), 0)
 
-    def test_ok_write_db(self):
+    def test_ok_find_db(self):
+        self.db.client = mongomock.MongoClient("127.0.0.1", 27017)
+        self.db.file = 'data_for_tests\\google0.csv'
+        self.db.write_db('1', '12')
         self.assertNotEqual(self.db.find_doc('1', '12'), 0)
 
 
