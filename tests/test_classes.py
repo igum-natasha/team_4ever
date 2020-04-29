@@ -72,6 +72,7 @@ class TestsWorkWithCoronaData(unittest.TestCase):
         self.corona.get_table()
         self.assertNotEqual(self.corona.table, [])
 
+
 class TestsFacts(unittest.TestCase):
 
     def test_bad_request(self):
