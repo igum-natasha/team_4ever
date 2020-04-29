@@ -89,28 +89,28 @@ def write_database(direct, name, ind, data):
 
 def corona_write(update: Updater):
     answer = ''
-    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
-    WorkWithCoronaData.provinces(corona)
+    corona0 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    WorkWithCoronaData.provinces(corona0)
     data = []
-    for elem in corona.count[:5]:
-        for row in corona.prov:
+    for elem in corona0.count[:5]:
+        for row in corona0.prov:
             for key, value in row.items():
                 if value[1] == elem:
                     data.append({'Place': value[0], 'Active': value[1]})
                     answer += f"{value[0]}: {value[1]}\n"
-    write_database("data\\", corona.data1, 'prov', data)
+    write_database("data\\", corona0.data1, 'prov', data)
     return answer
 
 
 def corona_dynamics_write(update: Updater):
     answer = ''
-    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    corona0 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
-    WorkWithCoronaData.corona_dynamics(corona)
+    WorkWithCoronaData.corona_dynamics(corona0)
     WorkWithCoronaData.corona_dynamics(corona1)
     data_1, data = [], []
-    for elem in corona.count[:5]:
-        for key, value in corona.now.items():
+    for elem in corona0.count[:5]:
+        for key, value in corona0.now.items():
             for key1, value1 in corona1.now.items():
                 if key == key1 and value[4] == elem:
                     data.append({"Country_Region": value[0], "Confirmed": value[1],
@@ -120,19 +120,19 @@ def corona_dynamics_write(update: Updater):
                     answer += f'{str(value[0]).upper()}\n'
                     answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered:' \
                         f' {value[3] -value1[3]} Active: {value[4] - value1[4]}\n'
-    write_database('data\\', corona.data1, 'dyn', data)
+    write_database('data\\', corona0.data1, 'dyn', data)
     write_database('data\\', corona1.data1, 'dyn', data_1)
     return answer
 
 
 def corona_russia_write(update: Updater):
     answer = ''
-    corona = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    corona0 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
     corona1 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 1)
-    WorkWithCoronaData.corona_russia(corona)
+    WorkWithCoronaData.corona_russia(corona0)
     WorkWithCoronaData.corona_russia(corona1)
     data_1, data = [], []
-    for key, value in corona.now.items():
+    for key, value in corona0.now.items():
         for key1, value1 in corona1.now.items():
             data.append({"Country_Region": value[0], "Confirmed": value[1],
                         "Deaths": value[2], "Recovered": value[3], "Active": value[4]})
@@ -141,7 +141,7 @@ def corona_russia_write(update: Updater):
             answer += f'{str(value[0]).upper()}\n'
             answer += f'Confirmed: {value[1] - value1[1]} Deaths: {value[2] - value1[2]} Recovered: ' \
                 f'{value[3] - value1[3]} Active: {value[4] - value1[4]}\n'
-    write_database('data\\', corona.data1, 'rus', data)
+    write_database('data\\', corona0.data1, 'rus', data)
     write_database('data\\', corona1.data1, 'rus', data_1)
     return answer
 
