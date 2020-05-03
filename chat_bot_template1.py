@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from setup import PROXY, TOKEN
+from team_4ever.setup import PROXY, TOKEN
 from telegram import Bot, Update
 import datetime
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
-from classes import WorkWithCoronaData, Website, WorkWithCsvTable, WriteDb
+from team_4ever.classes import WorkWithCoronaData, Website, WorkWithCsvTable, WriteDb
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -95,9 +95,9 @@ def corona_write(update: Updater):
     for elem in corona0.count[:5]:
         for row in corona0.prov:
             for key, value in row.items():
-                if value[1] == elem:
-                    data.append({'Place': value[0], 'Active': value[1]})
-                    answer += f"{value[0]}: {value[1]}\n"
+                if value[2] == elem:
+                    data.append({'Country': value[0], 'Province': value[1], 'Active': value[2]})
+                    answer += f"{value[0]},{value[1]}: {value[2]}\n"
     write_database("data\\", corona0.data1, 'prov', data)
     return answer
 
@@ -202,7 +202,7 @@ def corona(update: Updater, context: CallbackContext):
     if data:
         for row in data:
             for key, value in row.items():
-                if key != '_id' and (key == "Place"):
+                if key != '_id' and (key == "Country" or key == "Province"):
                     answer += f"{value}:"
                 elif key != '_id':
                     answer += f"{value}\n"

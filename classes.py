@@ -3,6 +3,7 @@ import requests
 import datetime
 from pymongo import MongoClient
 import pandas as pd
+import functools
 
 
 class WorkWithCsvTable:
@@ -70,13 +71,10 @@ class WorkWithCoronaData:
 
     def provinces(self):
         self.get_table()
-        for row in self.table:
-            if int(row['Active']) != 0:
-                if row['Province_State'] != '':
-                    self.prov.append({'Province_State': [row['Province_State'], int(row['Active'])]})
-                else:
-                    self.prov.append({'Country_Region': [row['Country_Region'], int(row['Active'])]})
-                self.count.append(int(row['Active']))
+        self.prov = [{'Province_State': [row['Country_Region'], row['Province_State'], int(row['Active'])]}
+                     for row in self.table if int(row['Active']) != 0 and row['Province_State'] != '']
+        self.count = [int(row['Active']) for row in self.table
+                      if int(row['Active']) != 0 and row['Province_State'] != '']
         self.count.sort(reverse=True)
 
     def corona_dynamics(self):
