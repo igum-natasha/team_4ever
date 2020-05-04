@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import patch
 
 from chat_bot_template1 import write_history, analise, write_facts, corona_write, corona_dynamics_write,\
-    corona_russia_write, history
+    corona_russia_write
 from classes import WorkWithCoronaData
 
 
@@ -125,7 +125,7 @@ class TestWriteCoronaDynamic(unittest.TestCase):
     def test_ok_write(self):
         write_database = mock.MagicMock()
         with patch('chat_bot_template1.write_database', write_database):
-                answer = corona_dynamics_write(self.update)
+            answer = corona_dynamics_write(self.update)
         self.assertNotEqual(answer, "")
 
     def test_equal_write(self):
@@ -155,7 +155,7 @@ class TestWriteCoronaRussia(unittest.TestCase):
     def test_ok_write(self):
         write_database = mock.MagicMock()
         with patch('chat_bot_template1.write_database', write_database):
-                answer = corona_russia_write(self.update)
+            answer = corona_russia_write(self.update)
         self.assertNotEqual(answer, "")
 
     def test_equal_write(self):
