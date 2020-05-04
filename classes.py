@@ -3,7 +3,6 @@ import requests
 import datetime
 from pymongo import MongoClient
 import pandas as pd
-import functools
 
 
 class WorkWithCsvTable:
