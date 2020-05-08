@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import re
 from setup import PROXY, TOKEN
 from telegram import Bot, Update
 import datetime
@@ -87,17 +88,17 @@ def write_database(direct, name, ind, data):
     db.write_db(name[0] + '-' + name[1] + '-' + name[2], ind)
 
 
-def corona_write(update: Updater):
+def corona_write(update: Updater, day):
     answer = ''
-    corona0 = WorkWithCoronaData([], [0] * 1000, [], [], {}, 0)
+    corona0 = WorkWithCoronaData([], [0] * 1000, [], [], {}, day)
     WorkWithCoronaData.provinces(corona0)
     data = []
     for elem in corona0.count[:5]:
         for row in corona0.prov:
             for key, value in row.items():
-                if value[1] == elem:
-                    data.append({'Place': value[0], 'Active': value[1]})
-                    answer += f"{value[0]}: {value[1]}\n"
+                if value[2] == elem:
+                    data.append({'Country': value[0], 'Province': value[1], 'Active': value[2]})
+                    answer += f"{value[0]}, {value[1]}: {value[2]}\n"
     write_database("data\\", corona0.data1, 'prov', data)
     return answer
 
@@ -193,21 +194,33 @@ def facts(update: Updater, context: CallbackContext):
 @decorator_error
 @analise
 def corona(update: Updater, context: CallbackContext):
-    answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+    user_message = update.message['text']
+    dat = re.findall(r'([0]+[1-9]+|[10-31]+)[-/.]+([0]+[1-9]+|[10-12]+)[-/.]+([0-9]{4})$', user_message)
     db = WriteDb()
-    data1 = datetime.date.today().strftime("%m-%d-%Y")
-    day = str(int(data1[3]) * 10 + int(data1[4]) - 1)
-    data2 = data1[:3] + day + data1[5:]
-    data = db.find_doc(data2, 'prov')
+    day = 0
+    if dat:
+        dat = list(dat[0])
+        answer = f'Пять провинций с наибольшим кол-вом зараженных COVID-19 на {".".join(dat)}:\n'
+        d1 = datetime.date(int(dat[2]), int(dat[1]), int(dat[0])+1)
+        data = db.find_doc(str(dat), 'prov')
+        d2 = datetime.date.today()
+        day = str(d2-d1).split()[0]
+    else:
+        answer = 'Пять провинций с наибольшим кол-вом зараженных COVID-19:\n'
+        data1 = datetime.date.today()
+        day1 = datetime.timedelta(days=1)
+        data1 -= day1
+        data1 = str(data1)
+        data = db.find_doc(data1, 'prov')
     if data:
         for row in data:
             for key, value in row.items():
-                if key != '_id' and (key == "Place"):
+                if key != '_id' and (key == "Country" or key == "Province"):
                     answer += f"{value}:"
                 elif key != '_id':
                     answer += f"{value}\n"
     else:
-        answer += corona_write(update)
+        answer += corona_write(update, int(day))
     update.message.reply_text(answer)
 
 
