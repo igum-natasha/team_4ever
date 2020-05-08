@@ -46,18 +46,19 @@ class WorkWithCoronaData:
     def get_table(self):
 
         self.data1 = datetime.date.today()
-        self.data1 = self.data1.strftime("%m-%d-%Y").split('-')
+        self.data1 = self.data1.strftime("%Y-%m-%d").split('-')
         while True:
             url = f'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/' \
-                f'csse_covid_19_daily_reports/{self.data1[0]}-{self.data1[1]}-{self.data1[2]}.csv'
+                f'csse_covid_19_daily_reports/{self.data1[1]}-{self.data1[2]}-{self.data1[0]}.csv'
             r = requests.get(url, allow_redirects=True)
+
             if r.status_code != 200:
-                if int(self.data1[1]) < 10:
-                    self.data1[1] = '0' + str(int(self.data1[1]) - 1 - self.day)
-                else:
-                    self.data1[1] = str(int(self.data1[1]) - 1 - self.day)
+                self.data1 = datetime.date(int(self.data1[0]), int(self.data1[1]), int(self.data1[2]))
+                day = datetime.timedelta(days=self.day + 1)
+                self.data1 -= day
             else:
                 break
+            self.data1 = str(self.data1).split('-')
         with open('google.csv', 'wb') as corona:
             corona.write(r.content)
         data_new = WorkWithCsvTable(data=[])
