@@ -106,13 +106,13 @@ class TestWriteCorona(unittest.TestCase):
     def test_5_lines_write(self):
         write_database = mock.MagicMock()
         with patch('chat_bot_template1.write_database', write_database):
-            answer = corona_write(self.update)
+            answer = corona_write(self.update, 0)
         self.assertEqual(answer.count('\n'), 5)
 
     def test_ok_write(self):
         write_database = mock.MagicMock()
         with patch('chat_bot_template1.write_database', write_database):
-            answer = corona_write(self.update)
+            answer = corona_write(self.update, 0)
         self.assertNotEqual(answer, "")
 
 
